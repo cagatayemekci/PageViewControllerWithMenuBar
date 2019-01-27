@@ -7,3 +7,7 @@
 //
 
 import Foundation
+
+struct  MenuModel {
+    var imageNames:[String]?
+}
