@@ -34,15 +34,19 @@ class MenuBar: UIView {
         }
     }
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, menuModel:MenuModel) {
         super.init(frame: frame)
+        self.menuModel = menuModel
         setupView()
         setupHorizontalBar()
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
     fileprivate func setupView() {
         collectionView.register(MenuCell.self, forCellWithReuseIdentifier: cellId)
-        
         addSubview(collectionView)
         addConstraintsWithFormat("H:|[v0]|", views: collectionView)
         addConstraintsWithFormat("V:|[v0]|", views: collectionView)
@@ -59,7 +63,8 @@ class MenuBar: UIView {
         horizontalBarLeftAnchorConstraint = horizontalBarView.leftAnchor.constraint(equalTo: self.leftAnchor)
         horizontalBarLeftAnchorConstraint?.isActive = true
         horizontalBarView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        horizontalBarView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/4).isActive = true
+        let imageCount = CGFloat(menuModel?.imageNames?.count ?? 1)
+        horizontalBarView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1/imageCount).isActive = true
         horizontalBarView.heightAnchor.constraint(equalToConstant: 4).isActive = true
     }
     
@@ -69,14 +74,10 @@ class MenuBar: UIView {
         collectionView.selectItem(at: selectedIndexPath, animated: false, scrollPosition: .bottom)
         
         let constant = self.frame.width * CGFloat(index)
-        self.horizontalBarLeftAnchorConstraint?.constant = constant / 4
+        self.horizontalBarLeftAnchorConstraint?.constant = constant / CGFloat((menuModel?.imageNames?.count ?? 1))
         UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
         }
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -87,7 +88,7 @@ extension MenuBar :UICollectionViewDataSource, UICollectionViewDelegate, UIColle
         changedSelectedPage(indexPath.row)
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return menuModel?.imageNames?.count ?? 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -100,7 +101,7 @@ extension MenuBar :UICollectionViewDataSource, UICollectionViewDelegate, UIColle
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.width / 4, height: frame.height)
+        return CGSize(width: frame.width / CGFloat(menuModel?.imageNames?.count ?? 1), height: frame.height)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {

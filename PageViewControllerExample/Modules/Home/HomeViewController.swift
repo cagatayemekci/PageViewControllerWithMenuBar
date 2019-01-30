@@ -9,8 +9,8 @@
 import UIKit
 
 class HomeViewController: UIViewController{
-    let menuBar: MenuBar = {
-        let mb = MenuBar(frame: .zero)
+    lazy var menuBar: MenuBar = {
+        let mb = MenuBar(frame: .zero, menuModel:menuModel)
         return mb
     }()
     
